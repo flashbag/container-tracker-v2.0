@@ -83,12 +83,6 @@ class ParseAdapterCosco extends BaseAdapter
             
         "));
 
-        if (!empty($data)) {
-            foreach ($data as $key => $row) {
-                $data[$key]['source'] = 'COSCO';
-            }
-        }
-
-        return $data;
+        return $this->appendAdapterName($data);
     }
 }

@@ -68,12 +68,6 @@ class ParseAdapterYangMing extends BaseAdapter
             
         "));
 
-        if (!empty($data)) {
-            foreach ($data as $key => $row) {
-                $data[$key]['source'] = 'YANG MING';
-            }
-        }
-
-        return $data;
+        return $this->appendAdapterName($data);
     }
 }

@@ -47,6 +47,17 @@ abstract class BaseAdapter
         ]);
     }
 
+    protected function appendAdapterName(array $data)
+    {
+        if (!empty($data)) {
+            foreach ($data as $key => $row) {
+                $data[$key]['source'] = $this->adapterName;
+            }
+        }
+
+        return $data;
+    }
+
     abstract public function processToTracking();
     abstract public function getData();
 }
