@@ -12,32 +12,54 @@ use Nesk\Rialto\Data\JsFunction;
 
 class ParseAdapterOocl extends BaseAdapter
 {
-    public $adapterName = 'Yang Ming';
+    public $adapterName = 'OOCL';
 
     public $url = 'https://www.oocl.com/eng/ourservices/eservices/cargotracking/Pages/cargotracking.aspx';
 
     public function processToTracking()
     {
-//        $this->page->waitFor(500);
+//        var_dump(time() . ' before waitForNavigation');
+//        $this->page->waitForNavigation();
+//        var_dump(time() . ' after waitForNavigation');
 
-//        $this->makeScreenshot();
-//        $this->page->click('button[data-id="ooclCargoSelector"]');
-//
-//        $this->page->waitFor(500);
-//
-//        $this->page->click('div.cargoTrackingDropDrown ul.dropdown-menu li[data-original-index="2"]');
-//
-//        $this->page->type('#SEARCH_NUMBER', $this->containerNumber, [
-//            'delay' => 50
-//        ]);
-//
-//        $this->page->waitFor(3000);
+        $this->page->waitForSelector('#cargoTrackingDropBtn',[
+//            'visible' => true
+        ]);
 
+        $this->page->waitFor(10000);
+
+        var_dump(time() . ' waitForSelector \'button.btn.dropdown-toggle\'');
+
+        var_dump(time() . ' click \'button.btn.dropdown-toggle\'');
+
+        $this->page->click('button.btn.dropdown-toggle');
+
+        var_dump(time() . ' waitFor');
+
+        $this->page->waitFor(2000);
+
+        var_dump(time() . ' click #cargoTrackingDropBtn .dropdown-menu.inner li[data-original-index="2"] a');
+
+        $this->page->click('#cargoTrackingDropBtn .dropdown-menu.inner li[data-original-index="2"] a');
+
+        $this->page->waitFor(2000);
+
+        $this->page->type('#SEARCH_NUMBER', $this->containerNumber, [
+            'delay' => 50
+        ]);
+
+        $this->page->click('#container_btn');
+
+        $this->page->waitFor(5000);
+
+        $this->makeScreenshot();
 
     }
 
     public function getData()
     {
-        // TODO: Implement getData() method.
+        $data = [];
+
+        return $this->appendAdapterName($data);
     }
 }

@@ -29,6 +29,7 @@ abstract class BaseAdapter
         $this->browser = $puppeteer->launch([
             'headless' => false,
             'log_browser_console' => true,
+            'ignoreHTTPSErrors' => true,
             'args' => ['--no-sandbox', '--disable-setuid-sandbox'],
             'defaultViewport' => [
                 'width' => 1200,

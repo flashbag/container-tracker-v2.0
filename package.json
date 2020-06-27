@@ -19,6 +19,7 @@
         "sass-loader": "^8.0.0"
     },
     "dependencies": {
-        "@nesk/puphpeteer": "^1.6.0"
+        "@nesk/puphpeteer": "^1.6.0",
+        "puppeteer": "^4.0.1"
     }
 }
