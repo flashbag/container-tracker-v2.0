@@ -6,7 +6,8 @@ if (process.argv.length < 3) {
 }
 
 // const Adapter = require('./adapters/adapter-oocl');
-const Adapter = require('./adapters/adapter-msc');
+// const Adapter = require('./adapters/adapter-msc');
+const Adapter = require('./adapters/adapter-cma-cgm');
 
 const containerNumber = process.argv[2];
 
