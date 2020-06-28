@@ -18,39 +18,51 @@ class ParseAdapterOocl extends BaseAdapter
 
     public function processToTracking()
     {
-//        var_dump(time() . ' before waitForNavigation');
-//        $this->page->waitForNavigation();
-//        var_dump(time() . ' after waitForNavigation');
 
+        $this->debug('wait for cargo tracking drop btn');
         $this->page->waitForSelector('#cargoTrackingDropBtn',[
 //            'visible' => true
         ]);
 
-        $this->page->waitFor(10000);
+        $this->debug('wait 15 s');
+        $this->page->waitFor(15000);
 
-        var_dump(time() . ' waitForSelector \'button.btn.dropdown-toggle\'');
+        $this->debug('scroll into view');
+        $this->page->evaluate(JsFunction::createWithBody("
+            return document.querySelector('.container').scrollIntoView();
+        "));
 
-        var_dump(time() . ' click \'button.btn.dropdown-toggle\'');
+        $this->debug('wait 15 s');
+        $this->page->waitFor(15000);
 
-        $this->page->click('button.btn.dropdown-toggle');
+        $this->debug('accept cookies');
+        $this->page->evaluate(JsFunction::createWithBody("
+            acceptCookiePolicy();
+        "));
 
-        var_dump(time() . ' waitFor');
+        $this->debug('click #cargoTrackingDropBtn');
+        $this->page->click('#cargoTrackingDropBtn');
 
-        $this->page->waitFor(2000);
+        $this->debug('wait 5 s');
+        $this->page->waitFor(5000);
 
-        var_dump(time() . ' click #cargoTrackingDropBtn .dropdown-menu.inner li[data-original-index="2"] a');
-
+        $this->debug('click dropdown container #');
         $this->page->click('#cargoTrackingDropBtn .dropdown-menu.inner li[data-original-index="2"] a');
 
+        $this->debug('wait 2 s');
         $this->page->waitFor(2000);
 
+        $this->debug('type #SEARCH_NUMBER');
         $this->page->type('#SEARCH_NUMBER', $this->containerNumber, [
             'delay' => 50
         ]);
 
+        $this->debug('click #container_btn');
         $this->page->click('#container_btn');
 
-        $this->page->waitFor(5000);
+        $this->debug('wait 10 s');
+
+        $this->page->waitFor(10000);
 
         $this->makeScreenshot();
 
@@ -58,7 +70,26 @@ class ParseAdapterOocl extends BaseAdapter
 
     public function getData()
     {
-        $data = [];
+        $pages = $this->browser->pages();
+
+        $popup = $pages[count($pages) - 1];
+
+        $popup->waitFor(7000);
+
+        $data = $popup->evaluate(JsFunction::createWithBody("
+            let table = document.querySelectorAll('table.groupTable')[0];
+            let row = table.querySelectorAll('tr[class]')[0];
+
+            let event = row.querySelectorAll('td')[5].textContent.replace(/(\\t|\\n)/g,'');
+            let place = row.querySelectorAll('td')[6].textContent;
+            let datetime = new Date(Date.parse(row.querySelectorAll('td')[7].textContent)).toDateString();
+
+            return [{
+                place: place,
+                event: event.replace(/(\\t|\\n)/g,''),
+                datetime: datetime,
+            }];
+        "));
 
         return $this->appendAdapterName($data);
     }

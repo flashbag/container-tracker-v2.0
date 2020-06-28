@@ -12,13 +12,13 @@ module.exports = {
 
         await page.goto(self.url, {waitUntil: 'networkidle2'});
 
-        await page.waitForSelector('#cargoTrackingDropBtn',[
-//            'visible' => true
-        ]);
+        await page.waitFor(25000);
 
-        await page.waitFor(10000);
+        await page.evaluate(function(){
+            acceptCookiePolicy();
+        });
 
-        await page.click('button.btn.dropdown-toggle');
+        await page.click('#cargoTrackingDropBtn .dropdown-toggle');
 
         await page.waitFor(2000);
 
@@ -45,6 +45,34 @@ module.exports = {
         console.log('----------------------------');
         console.log('-------   GET DATA  --------');
         console.log('----------------------------');
+
+        const pages = await browser.pages();
+
+        // console.log(pages);
+
+        const popup = pages[pages.length - 1];
+
+        await popup.waitFor(7000);
+
+        const records = await popup.evaluate(function(){
+            let table = document.querySelectorAll('table.groupTable')[0];
+            let row = table.querySelectorAll('tr[class]')[0];
+
+            let event = row.querySelectorAll('td')[5].textContent.replace(/(\\t|\\n)/g,'');
+            let place = row.querySelectorAll('td')[6].textContent;
+            let datetime = new Date(Date.parse(row.querySelectorAll('td')[7].textContent)).toDateString();
+
+            return [{
+                place: place,
+                event: event.replace(/(\\t|\\n)/g,''),
+                datetime: datetime,
+            }];
+
+        });
+
+        console.log(records);
+
+        browser.close();
 
     }
 };

@@ -10,7 +10,15 @@ function BaseAdapter(containerNumber) {
 
 
 BaseAdapter.prototype.createBrowser = async function() {
-    this.browser = await puppeteer.launch({ headless: false });
+
+    this.browser = await puppeteer.launch({
+        headless: false,
+        defaultViewport: {
+            width: 1200,
+            height: 555
+        }
+    });
+
     return this.browser;
 };
 

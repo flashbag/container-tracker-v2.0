@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace App\Models\Adapters;
 
@@ -15,7 +15,7 @@ abstract class BaseAdapter
 
     public function __construct(string $containerNumber)
     {
-        $this->containerNumber = $containerNumber;
+        $this->containerNumber = trim($containerNumber);
 
         $this->openPage();
     }
@@ -27,7 +27,7 @@ abstract class BaseAdapter
     {
         $puppeteer = new Puppeteer();
         $this->browser = $puppeteer->launch([
-            'headless' => false,
+//            'headless' => false,
             'log_browser_console' => true,
             'ignoreHTTPSErrors' => true,
             'args' => ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -38,7 +38,9 @@ abstract class BaseAdapter
         ]);
 
         $this->page = $this->browser->newPage();
-        $this->page->goto($this->url);
+        $this->page->goto($this->url, [
+            'waitUntil' => 'networkidle2'
+        ]);
     }
 
     public function makeScreenshot()
@@ -57,6 +59,26 @@ abstract class BaseAdapter
         }
 
         return $data;
+    }
+
+    protected function debug($var)
+    {
+        $type = gettype($var);
+        $dt = date('Y-m-d H:i:s');
+
+        $string = $dt . ' [ debug: ' .  $this->adapterName . ' ] ';
+
+        if ($type == 'array') {
+            $string .= 'ARRAY: '.  json_encode($var);
+        } else if ($type == 'string') {
+            $string .= $var;
+        } else {
+            $string .= var_dump($var);
+        }
+
+        $string .= PHP_EOL;
+
+        echo $string;
     }
 
     abstract public function processToTracking();
