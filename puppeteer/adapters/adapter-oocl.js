@@ -2,15 +2,15 @@ module.exports = {
     adapterName: 'Oocl',
     url: 'https://www.oocl.com/eng/ourservices/eservices/cargotracking/Pages/cargotracking.aspx',
 
-    processToTracking: async function (browser, page, containerNumber) {
+    goToUrl: async function (page) {
+        return await page.goto(this.url, {waitUntil: 'networkidle2'});
+    },
 
-        let self = this;
+    processToTracking: async function (page, containerNumber) {
 
         console.log('----------------------------');
         console.log('--- PROCESS TO TRACKING ----');
         console.log('----------------------------');
-
-        await page.goto(self.url, {waitUntil: 'networkidle2'});
 
         await page.waitFor(25000);
 
@@ -38,7 +38,7 @@ module.exports = {
     },
 
 
-    getData: async function (browser, page, containerNumber) {
+    getData: async function (browser, page) {
 
         let self = this;
 

@@ -5,7 +5,8 @@ if (process.argv.length < 3) {
     return false;
 }
 
-const Adapter = require('./adapters/adapter-oocl');
+// const Adapter = require('./adapters/adapter-oocl');
+const Adapter = require('./adapters/adapter-msc');
 
 const containerNumber = process.argv[2];
 
@@ -17,7 +18,10 @@ adapter
         return adapter.createPage();
     })
     .then(async function () {
-        return Adapter.processToTracking(adapter.browser, adapter.page, containerNumber);
+        return Adapter.goToUrl(adapter.page);
+    })
+    .then(async function () {
+        return Adapter.processToTracking(adapter.page, containerNumber);
     })
     .then(async function () {
         return Adapter.getData(adapter.browser, adapter.page, containerNumber);
