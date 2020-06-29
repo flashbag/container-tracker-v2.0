@@ -6,65 +6,86 @@ use Nesk\Rialto\Data\JsFunction;
 
 class ParseAdapterMaersk extends BaseAdapter
 {
+    public $adapterName = 'Maersk';
     public $url = 'https://www.maersk.com';
 
-    public function openPage()
+    public function processToTracking()
     {
-        parent::openPage();
+        $this->debug('containerNumber: ' . $this->containerNumber);
 
-        // Get the "viewport" of the page, as reported by the page.
-        $cookiesModalIsHidden = $this->page->evaluate(JsFunction::createWithBody("
-        
-            console.log('checking cookies modal');
-        
-            overlay = document.getElementById('coiOverlay');
-            
+        $this->debug('wait 5 s');
+        $this->page->waitFor(5000);
 
-            return overlay.getAttribute('style') === 'display: none;';
-            
+        $this->debug('CookieInformation.submitAllCategories()');
+        $this->page->evaluate(JsFunction::createWithBody("
+            return CookieInformation.submitAllCategories();
         "));
 
-        if ($cookiesModalIsHidden) {
+        $this->debug('click button[data-id="header-track"]');
+        $this->page->click('button[data-id="header-track"]');
 
-            $this->page->click('button.coi-banner__accept');
+        $this->debug('wait 1 s');
+        $this->page->waitFor(1000);
 
-        }
-
-        $this->page->waitForNavigation([
-//            'timeout' => 2000
+        $this->debug('type #ign-trackingNumber');
+        $this->page->type('#ign-trackingNumber', $this->containerNumber, [
+            'delay' => 50
         ]);
 
-        $this->page->screenshot(['path' => 'example.png']);
+        $this->debug('wait 1 s');
+        $this->page->waitFor(1000);
 
-//        $buttonTrack = $this->page->querySelector('#ign-navbar > ul.ign-header__buttons li button[data-id="header-track"]');
 
-//        $this->page->evaluate(JsFunction::createWithBody("
-//
-//            console.log('getting header menu');
-//
-//            menu = document.getElementsByClassName('ign-header__buttons')[0];
-//
-//            buttons = menu.getElementsByTagName('button');
-//
-//            return buttons;
-//
-//            for (var k in buttons) {
-//                if (buttons.hasOwnProperty(k)) {
-//                    button = buttons[k];
-//
-//                    if (button.getAttribute('data-id') === 'header-track') {
-//                        button.click();
-//                    }
-//                }
-//            }
-//
-//
-//
-//        "));
+        $this->debug('click button.ign-button--primary');
+        $this->page->click('button.ign-button--primary');
 
-        $this->page->screenshot(['path' => 'example.png']);
+        $this->debug('wait 5 s');
+        $this->page->waitFor(5000);
 
-        dd('$cookiesModalIsHidden', $cookiesModalIsHidden);
+        $this->debug('.pt-results: scroll into view');
+        $this->page->evaluate(JsFunction::createWithBody("
+            return document.querySelector('.pt-results').scrollIntoView();
+        "));
 
+        $this->makeScreenshot();
+
+    }
+
+    public function  getData()
+    {
+
+        $this->debug('GET DATA');
+        $data = $this->page->evaluate(JsFunction::createWithBody("
+        
+            
+            let table = document.querySelector('table.expandable-table__wrapper');
+
+                let record = {};
+    
+                let typeSpans =  table.querySelectorAll('td[data-th=\"Container type size\"] > span');
+                
+                let dateSpans =  table.querySelectorAll('td[data-th=\"Arrival date and time\"] > span');
+                
+                let placeSpans = table.querySelectorAll('td[data-th=\"Last location\"] > span');
+            
+            let dateParts = dateSpans[dateSpans.length - 1].innerHTML.split('<br>');
+            let placeParts = placeSpans[placeSpans.length - 1].innerHTML.split('<br>');
+            
+            let placeParts2 = placeParts[0].split('•');
+           
+            
+            record.type = typeSpans[typeSpans.length - 1].textContent;
+            record.date = new Date(Date.parse(dateParts[0])).toDateString();
+            
+            record.place = placeParts2[1].trim();
+            
+            record.event = placeParts2[0].trim();
+                
+
+            return [record];
+            //return [{ foo : 'bar' }];
+        "));
+
+        return $this->appendAdapterName($data);
     }
 }
