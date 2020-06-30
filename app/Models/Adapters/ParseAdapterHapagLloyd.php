@@ -4,26 +4,23 @@ namespace App\Models\Adapters;
 
 use Nesk\Rialto\Data\JsFunction;
 
-class ParseAdapterKLine extends BaseAdapter
+class ParseAdapterHapagLloyd extends BaseAdapter
 {
-    public $adapterName = 'K-LINE';
-    public $url = 'http://ecomm.one-line.com/ecom/CUP_HOM_3301.do?redir=Y&sessLocale=en';
+    public $adapterName = 'Hapag Lloyd';
+    public $url = 'https://www.hapag-lloyd.com/en/online-business/tracing/tracing-by-container.html';
 
     public function processToTracking()
     {
         $this->debug('containerNumber: ' . $this->containerNumber);
 
-        $this->debug('wait 5 s');
-        $this->page->waitFor(5000);
+        $this->debug('wait 7 s');
+        $this->page->waitFor(7000);
 
-        $this->debug('selecting "C" in select#searchType');
-        $this->page->evaluate(JsFunction::createWithBody("
-            select = document.getElementById('searchType');
-            select.value = 'C';
-        "));
+        $this->debug('click #accept-recommended-btn-handler');
+        $this->page->click('#accept-recommended-btn-handler');
 
-        $this->debug('type #searchName');
-        $this->page->type('#searchName', $this->containerNumber, [
+        $this->debug('type table[summary="LabelledComponentTable"] input');
+        $this->page->type('table[summary="LabelledComponentTable"] input', $this->containerNumber, [
             'delay' => 50
         ]);
 
@@ -31,8 +28,8 @@ class ParseAdapterKLine extends BaseAdapter
         $this->page->waitFor(1000);
 
 
-        $this->debug('click #btnSearch');
-        $this->page->click('#btnSearch');
+        $this->debug('click table[summary="ButtonPanelTable"] button');
+        $this->page->click('table[summary="ButtonPanelTable"] button');
 
         $this->debug('wait 5 s');
         $this->page->waitFor(5000);
