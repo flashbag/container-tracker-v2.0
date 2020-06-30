@@ -27,7 +27,7 @@ abstract class BaseAdapter
     {
         $puppeteer = new Puppeteer();
         $this->browser = $puppeteer->launch([
-//            'headless' => false,
+            'headless' => false,
             'log_browser_console' => true,
             'ignoreHTTPSErrors' => true,
             'args' => ['--no-sandbox', '--disable-setuid-sandbox'],

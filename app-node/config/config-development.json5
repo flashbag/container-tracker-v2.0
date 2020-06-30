@@ -1,0 +1,24 @@
+{
+  "db": {
+    "host": {
+      "doc": "Database host name/IP",
+      "format": "*",
+      "default": "localhost"
+    },
+    "name": {
+      "doc": "Database name",
+      "format": "String",
+      "default": "shipping_lines"
+    },
+    "user": {
+      "doc": "Database user",
+      "format": "String",
+      "default": "shipping_lines"
+    },
+    "password": {
+      "doc": "Database pass",
+      "format": "String",
+      "default": "shipping_lines"
+    }
+  }
+}

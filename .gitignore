@@ -12,3 +12,5 @@ npm-debug.log
 yarn-error.log
 /.idea/*
 screenshot*.png
+!/app-node/logs/.gitkeep
+/app-node//logs/*.log

@@ -1,0 +1,25 @@
+{
+  db: {
+    host: {
+      doc: "Database host name/IP",
+      format: '*',
+      default: 'localhost'
+    },
+    name: {
+      doc: "Database name",
+      format: 'String',
+      default: 'abrdb'
+    },
+    user: {
+      doc: "Database user",
+      format: 'String',
+      default: 'abruser'
+    },
+    password: {
+      doc: "Database pass",
+      format: 'String',
+      default: 'abrpass'
+    },
+
+  }
+}
