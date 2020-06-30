@@ -45,8 +45,8 @@ class CompanySeeder extends Seeder
                 "enabled" => false,
             ],
             [
-                "name" => "HAMBURG SUED",
-                "adapter" => "App\Models\Adapters\ParseAdapterHamburgSued",
+                "name" => "HAMBURG SUD",
+                "adapter" => "App\Models\Adapters\ParseAdapterHamburgSud",
                 "enabled" => false,
             ],
             [
@@ -107,6 +107,14 @@ class CompanySeeder extends Seeder
                 "enabled" => false,
             ],
         ];
+
+
+        $hamburgSuedOld = Company::where('name', 'HAMBURG SUED')->first();
+
+        if ($hamburgSuedOld) {
+            $hamburgSuedOld->prefixes->each->delete();
+            $hamburgSuedOld->delete();
+        }
 
         foreach ($companies as $company) {
 

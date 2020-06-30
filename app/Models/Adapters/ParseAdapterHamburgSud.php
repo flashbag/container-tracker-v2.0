@@ -4,23 +4,20 @@ namespace App\Models\Adapters;
 
 use Nesk\Rialto\Data\JsFunction;
 
-class ParseAdapterHapagLloyd extends BaseAdapter
+class ParseAdapterHamburgSud extends BaseAdapter
 {
-    public $adapterName = 'Hapag Lloyd';
-    public $url = 'https://www.hapag-lloyd.com/en/online-business/tracing/tracing-by-container.html';
+    public $adapterName = 'Hamburg Sub';
+    public $url = 'https://www.hamburgsud-line.com/linerportal/pages/hsdg/tnt.xhtml?lang=en';
 
     public function processToTracking()
     {
         $this->debug('containerNumber: ' . $this->containerNumber);
 
-        $this->debug('wait 7 s');
-        $this->page->waitFor(7000);
+        $this->debug('wait 5 s');
+        $this->page->waitFor(5000);
 
-        $this->debug('click #accept-recommended-btn-handler');
-        $this->page->click('#accept-recommended-btn-handler');
-
-        $this->debug('type table[summary="LabelledComponentTable"] input');
-        $this->page->type('table[summary="LabelledComponentTable"] input', $this->containerNumber, [
+        $this->debug('type form textarea');
+        $this->page->type('form textarea', $this->containerNumber, [
             'delay' => 50
         ]);
 
@@ -28,17 +25,11 @@ class ParseAdapterHapagLloyd extends BaseAdapter
         $this->page->waitFor(1000);
 
 
-        $this->debug('click table[summary="ButtonPanelTable"] button');
-        $this->page->click('table[summary="ButtonPanelTable"] button');
+        $this->debug('click form button[type="submit"]');
+        $this->page->click('form button[type="submit"]');
 
         $this->debug('wait 5 s');
         $this->page->waitFor(5000);
-
-        $this->debug('#statusInfo: scroll into view');
-
-        $this->page->evaluate(JsFunction::createWithBody("
-            return document.querySelector('#statusInfo').scrollIntoView();
-        "));
 
         $this->makeScreenshot();
 
@@ -47,7 +38,6 @@ class ParseAdapterHapagLloyd extends BaseAdapter
     public function getData()
     {
         $this->debug('GET DATA');
-
         // TODO check it with valid Container No.
 
 //        $data = $this->page->evaluate(JsFunction::createWithBody("
@@ -104,6 +94,7 @@ class ParseAdapterHapagLloyd extends BaseAdapter
 //            });
 //
 //            return [record];
+//
 //
 //        "));
 

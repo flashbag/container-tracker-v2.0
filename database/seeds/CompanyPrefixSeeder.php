@@ -96,8 +96,9 @@ class CompanyPrefixSeeder extends Seeder
                 "TGH",
             ],
 
-            "HAMBURG SUED" => [
+            "HAMBURG SUD" => [
                 "CAD",
+                "SUD"
             ],
 
             "HAPAG LLOYD" => [
