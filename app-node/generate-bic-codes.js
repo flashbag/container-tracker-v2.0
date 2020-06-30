@@ -16,21 +16,55 @@ class GenerateBicCodes {
     this.prefixes = [];
   }
 
-  generateString(length) {
-   var result           = '';
-   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-   var charactersLength = characters.length;
-   for ( let i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-   return result;
+  getSymbolsSequence(length) {
+
+      switch (length) {
+        case 2:
+          for (let i = 0; i < this.symbols.length; i++) {
+            this.prefixes.push(this.ownerCodePrefix + this.symbols[i]);
+          }
+          break;
+        case 1:
+          for (let i = 0; i < this.symbols.length; i++) {
+            for (let j = 0; j < this.symbols.length; j++) {
+                this.prefixes.push(
+                  this.ownerCodePrefix +
+                  this.symbols[i] +
+                  this.symbols[j]
+                );
+            }
+
+          }
+
+          break;
+        case 0:
+
+        for (let i = 0; i < this.symbols.length; i++) {
+          for (let j = 0; j < this.symbols.length; j++) {
+            for (let n = 0; n < this.symbols.length; n++) {
+              this.prefixes.push(
+                this.symbols[i] +
+                this.symbols[j] +
+                this.symbols[n]
+              );
+            }
+          }
+
+        }
+
+          break;
+        default:
+          break;
+      }
   }
 
   calculateCombinations(ownerCodeLetters = []) {
 
     console.log('calculateCombinations');
 
-    this.ownerCodePrefix = ownerCodeLetters.join();
+    console.log('ownerCodeLetters:', ownerCodeLetters);
+
+    this.ownerCodePrefix = ownerCodeLetters.join('');
 
     console.log('ownerCodePrefix:', this.ownerCodePrefix);
 
@@ -41,37 +75,11 @@ class GenerateBicCodes {
       // generate single combination
       this.prefixes.push(this.ownerCodePrefix);
     } else {
-
-      let iterations = 3 - ownerCodeLetters.length;
-
-      console.log('iterations:', iterations);
-
-      switch (iterations) {
-        case 2:
-            for (let i = 0; i < 26; i++) {
-              this.prefixes.push(this.ownerCodePrefix + this.generateString(1));
-            }
-        // ownerCodeLetters.length == 2
-        // generate 26
-          break;
-        default:
-
-      }
-
-
-      // ownerCodeLetters.length == 0
-      // generate 26 * 26 * 26
-
-      // ownerCodeLetters.length == 1
-      // generate 26 * 26
-
-
+      this.getSymbolsSequence(ownerCodeLetters.length)
     }
 
 
     console.log(ownerCodeLetters);
-
-
 
     console.log('prefixes:', this.prefixes);
 
