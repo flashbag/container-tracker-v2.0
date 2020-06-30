@@ -11,49 +11,34 @@ class ParseAdapterCosco extends BaseAdapter
 
     public function processToTracking()
     {
-        $this->page->waitFor(2000);
+        $this->debug('wait 3 s');
+        $this->page->waitFor(3000);
 
-        $needToCloseModal = $this->page->evaluate(JsFunction::createWithBody("
-            
-            const allModalsHidden = true;
-            
-            let modals = document.querySelectorAll('.ivu-modal-wrap');
-             
-            let countModalsTotal = modals.length;
-            let countModalsHidden = 0;
-            
-            modals.forEach(function(item, index) {    
-                if (item.className.indexOf('hidden') === -1) {
-                    countModalsHidden = countModalsHidden + 1;
-                }
-            }); 
-            
-            let magicBool = countModalsTotal > countModalsHidden;
-            
-            return magicBool;
-            
-        "));
 
-        if ($needToCloseModal) {
-            $this->page->waitFor(1000);
-            $this->page->click('.ivu-modal-wrap:not(.ivu-modal-hidden) .ivu-modal-footer .ivu-btn-primary');
-        }
+        $this->debug('closing modal');
+        $this->page->click('.ivu-modal-wrap:not(.ivu-modal-hidden) .ivu-modal-footer .ivu-btn-primary');
 
-        $this->page->waitFor(500);
 
+        $this->debug('wait 1 s');
+        $this->page->waitFor(1000);
+
+        $this->debug('click div.search_header ul.srh_c_t li:nth-child(3)');
         $this->page->click('div.search_header ul.srh_c_t li:nth-child(3)');
+
+        $this->debug('type input.ivu-input');
 
         $this->page->type('input.ivu-input', $this->containerNumber, [
             'delay' => 50
         ]);
 
-        $this->page->waitFor(200);
+        $this->debug('wait 1 s');
+        $this->page->waitFor(1000);
 
+        $this->debug('click a.ser_btn');
         $this->page->click('a.ser_btn');
 
+        $this->debug('wait 3 s');
         $this->page->waitFor(3000);
-
-        $this->page->click('.toggleCNTRMovingHistory');
 
         $this->makeScreenshot();
 
@@ -61,25 +46,50 @@ class ParseAdapterCosco extends BaseAdapter
 
     public function getData()
     {
+        $this->debug('GET DATA');
+
         $data = $this->page->evaluate(JsFunction::createWithBody("
             
-            let rows = document.querySelectorAll('.cntrMovintItem');
+            let record = {};
             
-            let data = [];
+            let row = document.querySelector('.cntrMovintItem');
+               
+            if (!row) {
+                return [record];    
+            }
+               
+              
+            let elements = [
             
-            rows.forEach(function(item){
-            
-                let record = {};
-                record.datetime = item.querySelector('.issueTime').textContent;
-                record.event = item.querySelector('.singleMoving > div:nth-child(2) .value').textContent;
-                record.place = item.querySelector('.singleMoving > div:nth-child(3) .value').textContent;
+                { 
+                    prop: 'type',
+                    node: document.querySelector('.cntrInfos span > span') 
+                },
                 
-                data.push(record);
+                { 
+                    prop: 'date',
+                    node: row.querySelector('.issueTime > p')
+                },
+                
+                { 
+                    prop: 'event',
+                    node: row.querySelector('.singleMoving > div:nth-child(2) p.value')
+                },
+                
+                { 
+                    prop: 'place',
+                    node: row.querySelector('.singleMoving > div:nth-child(3) p.value')
+                }
+            ];
+            
+            elements.forEach(function(el, index) {
+                if (el.node instanceof Element) {
+                    record[el.prop] = el.node.textContent.trim();
+                }
             });
             
-            console.log(data);
-            
-            return data;
+           
+            return [record];
             
         "));
 

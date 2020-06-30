@@ -55,18 +55,28 @@ class ParseAdapterCmaCgm extends BaseAdapter
     {
         $this->debug('GET DATA');
         $data = $this->page->evaluate(JsFunction::createWithBody("
-            let table = document.querySelector('table');
-
+        
             let record = {};
+            
+            let table = document.querySelector('table');
+            
+            if (!table) {
+                return [record];
+            }
 
-            record.type = document.querySelector('abbr[class=\"o-container-type\"]').textContent;
+            let typeElement = document.querySelector('abbr[class=\"o-container-type\"]');
+            
+            if (typeElement) {
+                record.type = typeElement.textContent;
+            }
+            
 
             table.querySelectorAll('tr').forEach(function (row, indexRow) {
-
+                
                 if (indexRow === 1) {
 
                     let cells = row.querySelectorAll('td');
-
+                    
                     cells.forEach(function (cell, indexCell) {
 
                         if (indexCell === 0) {
@@ -87,6 +97,7 @@ class ParseAdapterCmaCgm extends BaseAdapter
 
 
             return [record];
+            
         "));
 
         return $this->appendAdapterName($data);

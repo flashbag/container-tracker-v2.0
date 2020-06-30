@@ -44,9 +44,18 @@ class ParseAdapterApl extends BaseAdapter
         $this->debug('GET DATA');
         $data = $this->page->evaluate(JsFunction::createWithBody("
         
+            let record = {};
             let table = document.querySelector('.c-endtoend--table table');
+            
+            if (!table) {
+                return [record];
+            }
 
             let cells = table.querySelectorAll('tr[class=\"is-current is-open\"] td');
+            
+            if (!cells.length) {
+                return [record];
+            }
     
             return [{
                 type: document.querySelector('.o-container-type').textContent.trim(),

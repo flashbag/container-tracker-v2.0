@@ -53,16 +53,59 @@ class ParseAdapterKLine extends BaseAdapter
         $this->debug('GET DATA');
         $data = $this->page->evaluate(JsFunction::createWithBody("
         
+            let record = {};
             let table = document.querySelector('#detailInfo > table');
+            
+            if (!table) {
+                return [record];
+            }
 
             let cells = table.querySelectorAll('tr:last-child > td');
+            
+            if (!cells.length) {
+                return [record];
+            }
     
-            return [{
-                type: document.getElementById('st_cntrTpszNm').innerHTML.split('<br>')[1],
-                date: new Date(Date.parse(cells[3].textContent)).toDateString(),
-                event: cells[1].textContent.trim(),
-                place: cells[2].textContent.trim()
-            }];
+            let elements = [
+            
+                { 
+                    prop: 'type',
+                    node: document.getElementById('st_cntrTpszNm')
+                },
+                
+                { 
+                    prop: 'date',
+                    node: cells[3]
+                },
+                
+                { 
+                    prop: 'event',
+                    node: cells[1]
+                },
+                
+                { 
+                    prop: 'place',
+                    node: cells[2]
+                }
+            ];
+            
+            elements.forEach(function(el, index) {
+            
+                if (el.node instanceof Element) {
+                  if (el.prop === 'type') {
+                    record[el.prop] = el.node.innerHTML.split('<br>')[1];
+                  } else if (el.prop === 'date') {
+                    record[el.prop] = new Date(Date.parse(el.node.textContent)).toDateString();
+                  } else {
+                    record[el.prop] = el.node.textContent.trim();
+                  }  
+                }
+                
+               
+            });
+            
+            return [record];
+           
 
         "));
 

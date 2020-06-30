@@ -32,8 +32,8 @@ class ParseAdapterOocl extends BaseAdapter
             return document.querySelector('.container').scrollIntoView();
         "));
 
-        $this->debug('wait 15 s');
-        $this->page->waitFor(15000);
+        $this->debug('wait 10 s');
+        $this->page->waitFor(10000);
 
         $this->debug('accept cookies');
         $this->page->evaluate(JsFunction::createWithBody("
@@ -77,18 +77,65 @@ class ParseAdapterOocl extends BaseAdapter
         $popup->waitFor(7000);
 
         $data = $popup->evaluate(JsFunction::createWithBody("
-            let table = document.querySelectorAll('table.groupTable')[0];
+            let record = {};
+
+            let table = document.querySelector('table.groupTable');
+
+            if (!table) {
+                return [record];
+            }
+
             let row = table.querySelectorAll('tr[class]')[0];
 
-            let event = row.querySelectorAll('td')[5].textContent.replace(/(\\t|\\n)/g,'');
-            let place = row.querySelectorAll('td')[6].textContent;
-            let datetime = new Date(Date.parse(row.querySelectorAll('td')[7].textContent)).toDateString();
+            if (!row) {
+                return [record];
+            }
 
-            return [{
-                place: place,
-                event: event.replace(/(\\t|\\n)/g,''),
-                datetime: datetime,
-            }];
+            let cells = row.querySelectorAll('td');
+
+            if (!cells.length) {
+                return [record];   
+            }
+
+            
+
+            let elements = [
+            
+                // { 
+                //     prop: 'type',
+                //     node: document.getElementById('st_cntrTpszNm')
+                // },
+                
+                { 
+                    prop: 'date',
+                    node: cells[7]
+                },
+                
+                { 
+                    prop: 'event',
+                    node: cells[5]
+                },
+                
+                { 
+                    prop: 'place',
+                    node: cells[6]
+                }
+            ];
+            
+            
+            elements.forEach(function(el, index) {
+            
+                if (el.node instanceof Element) {
+                  if (el.prop === 'date') {
+                    record[el.prop] = new Date(Date.parse(el.node.textContent.split(',')[0])).toDateString();
+                  } else {
+                    record[el.prop] = el.node.textContent.replace(/(\\t|\\n)/g,'').trim();
+                  }  
+                }
+                               
+            });
+
+            return [record];
         "));
 
         return $this->appendAdapterName($data);

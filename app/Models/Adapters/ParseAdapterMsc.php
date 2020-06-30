@@ -79,47 +79,51 @@ class ParseAdapterMsc extends BaseAdapter
 
             let record = {};
 
-            tableStats.querySelectorAll('tr').forEach(function (row, indexRow) {
+            if (tableStats instanceof Element) {
+                tableStats.querySelectorAll('tr').forEach(function (row, indexRow) {
 
-                if (indexRow === 1) {
+                    if (indexRow === 1) {
 
-                    let cells = row.querySelectorAll('td');
+                        let cells = row.querySelectorAll('td');
 
-                    cells.forEach(function (cell, indexCell) {
+                        cells.forEach(function (cell, indexCell) {
 
-                        if (indexCell === 0) {
-                            record.type = cell.textContent.trim();
-                        }
-                    });
-                }
+                            if (indexCell === 0) {
+                                record.type = cell.textContent.trim();
+                            }
+                        });
+                    }
 
-            });
+                });
+            }
+            
+            if (tableResults instanceof Element) {
 
-            tableResults.querySelectorAll('tr').forEach(function (row, indexRow) {
+                tableResults.querySelectorAll('tr').forEach(function (row, indexRow) {
 
-                if (indexRow === 1) {
+                    if (indexRow === 1) {
 
-                    let cells = row.querySelectorAll('td');
+                        let cells = row.querySelectorAll('td');
 
-                    cells.forEach(function (cell, indexCell) {
+                        cells.forEach(function (cell, indexCell) {
 
-                        if (indexCell === 0) {
-                            record.place = cell.textContent.trim();
-                        }
+                            if (indexCell === 0) {
+                                record.place = cell.textContent.trim();
+                            }
 
-                        if (indexCell === 1) {
-                            record.event = cell.textContent.trim();
-                        }
+                            if (indexCell === 1) {
+                                record.event = cell.textContent.trim();
+                            }
 
-                        if (indexCell === 2) {
-                            record.date = new Date(Date.parse(cell.textContent)).toDateString();
-                        }
-                    });
+                            if (indexCell === 2) {
+                                record.date = new Date(Date.parse(cell.textContent)).toDateString();
+                            }
+                        });
 
-                }
-            });
-
-
+                    }
+                });
+                
+            }
 
             return [record];
         "));

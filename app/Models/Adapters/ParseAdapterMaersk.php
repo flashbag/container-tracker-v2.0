@@ -57,33 +57,45 @@ class ParseAdapterMaersk extends BaseAdapter
         $this->debug('GET DATA');
         $data = $this->page->evaluate(JsFunction::createWithBody("
         
-            
+            let record = {};           
             let table = document.querySelector('table.expandable-table__wrapper');
 
-                let record = {};
-    
-                let typeSpans =  table.querySelectorAll('td[data-th=\"Container type size\"] > span');
-                
-                let dateSpans =  table.querySelectorAll('td[data-th=\"Arrival date and time\"] > span');
-                
-                let placeSpans = table.querySelectorAll('td[data-th=\"Last location\"] > span');
-            
-            let dateParts = dateSpans[dateSpans.length - 1].innerHTML.split('<br>');
-            let placeParts = placeSpans[placeSpans.length - 1].innerHTML.split('<br>');
-            
-            let placeParts2 = placeParts[0].split('•');
-           
-            
-            record.type = typeSpans[typeSpans.length - 1].textContent;
-            record.date = new Date(Date.parse(dateParts[0])).toDateString();
-            
-            record.place = placeParts2[1].trim();
-            
-            record.event = placeParts2[0].trim();
-                
+            if (!table) {
+                return [record];
+            }
+
+
+            let typeSpans =  table.querySelectorAll('td[data-th=\"Container type size\"] > span');
+            let dateSpans =  table.querySelectorAll('td[data-th=\"Arrival date and time\"] > span');
+            let placeSpans = table.querySelectorAll('td[data-th=\"Last location\"] > span');
+
+            if (typeSpans.length) {
+                record.type = typeSpans[typeSpans.length - 1].textContent;    
+            } 
+
+            if (dateSpans.length) {
+                let dateParts = dateSpans[dateSpans.length - 1].innerHTML.split('<br>');
+
+                if (dateParts.length) {
+                    record.date = new Date(Date.parse(dateParts[0])).toDateString();
+                }    
+            }
+
+            if (placeSpans.length) {
+
+                let placeParts = placeSpans[placeSpans.length - 1].innerHTML.split('<br>');    
+
+                if (placeParts.length) {
+                    let placeParts2 = placeParts[0].split('•');        
+
+                    if (placeParts2.length === 2) {
+                        record.place = placeParts2[1].trim();
+                        record.event = placeParts2[0].trim();
+                    }
+                }
+            }
 
             return [record];
-            //return [{ foo : 'bar' }];
         "));
 
         return $this->appendAdapterName($data);
